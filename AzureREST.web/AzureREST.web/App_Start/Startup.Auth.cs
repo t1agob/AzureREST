@@ -12,6 +12,7 @@ using Microsoft.Owin.Security.OpenIdConnect;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Owin;
 using AzureREST.web.Models;
+using System.Text;
 
 namespace AzureREST.web
 {
@@ -26,7 +27,7 @@ namespace AzureREST.web
         public static readonly string Authority = aadInstance + tenantId;
 
         // This is the resource ID of the AAD Graph API.  We'll need this to request a token to call the Graph API.
-        string graphResourceId = "https://graph.windows.net/";
+        string ResourceId = "https://management.azure.com/";
 
         public void ConfigureAuth(IAppBuilder app)
         {
@@ -42,7 +43,7 @@ namespace AzureREST.web
                     ClientId = clientId,
                     Authority = Authority,
                     PostLogoutRedirectUri = postLogoutRedirectUri,
-
+                    
                     Notifications = new OpenIdConnectAuthenticationNotifications()
                     {
                         // If there is a code in the OpenID Connect response, redeem it for an access token and refresh token, and store those away.
@@ -50,10 +51,12 @@ namespace AzureREST.web
                         {
                             var code = context.Code;
                             ClientCredential credential = new ClientCredential(clientId, appKey);
-                            string signedInUserID = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                            //string signedInUserID = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
+                            string signedInUserID = Convert.ToBase64String(Encoding.UTF8.GetBytes(context.AuthenticationTicket.Identity.Name));
                             AuthenticationContext authContext = new AuthenticationContext(Authority, new ADALTokenCache(signedInUserID));
-                            return authContext.AcquireTokenByAuthorizationCodeAsync(
-                               code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, graphResourceId);
+                            var result = authContext.AcquireTokenByAuthorizationCodeAsync(
+                               code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, ResourceId);
+                            return result;
                         }
                     }
                 });

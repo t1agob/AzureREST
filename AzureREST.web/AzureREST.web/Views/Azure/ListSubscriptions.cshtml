@@ -1,0 +1,32 @@
+﻿@model IEnumerable<AzureREST.web.Models.Azure.SubscriptionRM>
+
+@{
+    ViewBag.Title = "List Subscriptions";
+}
+
+<h2>List Subscriptions</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            Subscription Name
+        </th>
+        <th>
+            Subscription Id
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.displayName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.subscriptionId)
+        </td>
+    </tr>
+}
+
+</table>
