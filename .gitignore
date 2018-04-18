@@ -1,0 +1,8 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs
+/AzureREST.web/.vs/config
+/AzureREST.web/AzureREST.web/obj/Debug
+/AzureREST.web/packages
