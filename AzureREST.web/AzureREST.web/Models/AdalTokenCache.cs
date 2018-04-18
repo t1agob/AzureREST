@@ -17,18 +17,18 @@ namespace AzureREST.web.Models
 
         public ADALTokenCache(string signedInUserId)
         {
-            // associate the cache to the current user of the web app
+            // Associate the cache to the current user of the web app
             userId = signedInUserId;
             this.AfterAccess = AfterAccessNotification;
             this.BeforeAccess = BeforeAccessNotification;
             this.BeforeWrite = BeforeWriteNotification;
-            // look up the entry in the database
+            // Look up the entry in the database
             Cache = db.UserTokenCacheList.FirstOrDefault(c => c.webUserUniqueId == userId);
-            // place the entry in memory
+            // Place the entry in memory
             this.Deserialize((Cache == null) ? null : MachineKey.Unprotect(Cache.cacheBits,"ADALCache"));
         }
 
-        // clean up the database
+        // Clean up the database
         public override void Clear()
         {
             base.Clear();
@@ -43,12 +43,12 @@ namespace AzureREST.web.Models
         {
             if (Cache == null)
             {
-                // first time access
+                // First time access
                 Cache = db.UserTokenCacheList.FirstOrDefault(c => c.webUserUniqueId == userId);
             }
             else
-            { 
-                // retrieve last write from the DB
+            {
+                // Retrieve last write from the DB
                 var status = from e in db.UserTokenCacheList
                              where (e.webUserUniqueId == userId)
                 select new
@@ -56,10 +56,10 @@ namespace AzureREST.web.Models
                     LastWrite = e.LastWrite
                 };
 
-                // if the in-memory copy is older than the persistent copy
+                // If the in-memory copy is older than the persistent copy
                 if (status.First().LastWrite > Cache.LastWrite)
                 {
-                    // read from from storage, update in-memory copy
+                    // Read from from storage, update in-memory copy
                     Cache = db.UserTokenCacheList.FirstOrDefault(c => c.webUserUniqueId == userId);
                 }
             }
@@ -70,21 +70,16 @@ namespace AzureREST.web.Models
         // If the HasStateChanged flag is set, ADAL changed the content of the cache
         void AfterAccessNotification(TokenCacheNotificationArgs args)
         {
-            // if state changed
+            // If state changed
             if (this.HasStateChanged)
             {
-                if (Cache == null)
+                Cache = new UserTokenCache
                 {
-                    Cache = new UserTokenCache
-                    {
-                        webUserUniqueId = userId
-                    };
-                }
-
-                Cache.cacheBits = MachineKey.Protect(this.Serialize(), "ADALCache");
-                Cache.LastWrite = DateTime.Now;
-
-                // update the DB and the lastwrite 
+                    webUserUniqueId = userId,
+                    cacheBits = MachineKey.Protect(this.Serialize(), "ADALCache"),
+                    LastWrite = DateTime.Now
+                };
+                // Update the DB and the lastwrite
                 db.Entry(Cache).State = Cache.UserTokenCacheId == 0 ? EntityState.Added : EntityState.Modified;
                 db.SaveChanges();
                 this.HasStateChanged = false;
@@ -93,10 +88,10 @@ namespace AzureREST.web.Models
 
         void BeforeWriteNotification(TokenCacheNotificationArgs args)
         {
-            // if you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
+            // If you want to ensure that no concurrent write take place, use this notification to place a lock on the entry
         }
 
-        public override void DeleteItem(TokenCacheItem item)
+    public override void DeleteItem(TokenCacheItem item)
         {
             base.DeleteItem(item);
         }
