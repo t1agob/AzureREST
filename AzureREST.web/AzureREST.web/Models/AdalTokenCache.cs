@@ -73,12 +73,20 @@ namespace AzureREST.web.Models
             // If state changed
             if (this.HasStateChanged)
             {
-                Cache = new UserTokenCache
+                if (Cache != null)
                 {
-                    webUserUniqueId = userId,
-                    cacheBits = MachineKey.Protect(this.Serialize(), "ADALCache"),
-                    LastWrite = DateTime.Now
-                };
+                    Cache.cacheBits = this.Serialize();
+                    Cache.LastWrite = DateTime.Now;
+                }
+                else
+                {
+                    Cache = new UserTokenCache
+                    {
+                        webUserUniqueId = userId,
+                        cacheBits = MachineKey.Protect(this.Serialize(), "ADALCache"),
+                        LastWrite = DateTime.Now
+                    };
+                }
                 // Update the DB and the lastwrite
                 db.Entry(Cache).State = Cache.UserTokenCacheId == 0 ? EntityState.Added : EntityState.Modified;
                 db.SaveChanges();

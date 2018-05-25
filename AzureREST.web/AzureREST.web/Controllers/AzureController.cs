@@ -41,8 +41,8 @@ namespace AzureREST.web.Controllers
         private async Task GetAccessToken()
         {
             var signedInUser = Convert.ToBase64String(Encoding.UTF8.GetBytes(User.Identity.Name));
-
-            var ac = new AuthenticationContext(Authority, new ADALTokenCache(signedInUser));
+            
+            var ac = new AuthenticationContext(Authority);
             AuthenticationResult result = null;
             AccessToken = null;
 
@@ -55,7 +55,7 @@ namespace AzureREST.web.Controllers
             {
                 if (adalException.ErrorCode == AdalError.FailedToAcquireTokenSilently
                     || adalException.ErrorCode == AdalError.InteractionRequired)
-                {
+                {                    
                     var clientCred = new ClientCredential(clientId, appKey);
                     result = await ac.AcquireTokenAsync(ResourceId, clientCred);
 

@@ -126,7 +126,7 @@
             <summary>
             'Remembers' the nonce associated with this message. By default the nonce added as a secure cookie.
             </summary>
-            <param name="message"><see cref="T:Microsoft.IdentityModel.Protocols.OpenIdConnectMessage"/> associated with the nonce.</param>
+            <param name="message"><see cref="T:Microsoft.IdentityModel.Protocols.OpenIdConnectMessage"/> associatied with the nonce.</param>
             <param name="nonce">the nonce to remember.</param>
             <remarks>A cookie is added with the name obtained from  <see cref="M:Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationHandler.GetNonceKey(System.String)"/>.</remarks>
         </member>
@@ -365,11 +365,6 @@
             Indicates that the authentication session lifetime (e.g. cookies) should match that of the authentication token.
             If the token does not provide lifetime information then normal session lifetimes will be used.
             This is enabled by default.
-            </summary>
-        </member>
-        <member name="P:Microsoft.Owin.Security.OpenIdConnect.OpenIdConnectAuthenticationOptions.CookieManager">
-            <summary>
-            An abstraction for reading and setting cookies during the authentication process.
             </summary>
         </member>
         <member name="T:Microsoft.Owin.Security.OpenIdConnect.Resources">

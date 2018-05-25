@@ -35,6 +35,8 @@ namespace AzureREST.web
 
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
+            app.UseKentorOwinCookieSaver();
+
             app.UseCookieAuthentication(new CookieAuthenticationOptions());
 
             app.UseOpenIdConnectAuthentication(
@@ -53,7 +55,7 @@ namespace AzureREST.web
                             ClientCredential credential = new ClientCredential(clientId, appKey);
                             //string signedInUserID = context.AuthenticationTicket.Identity.FindFirst(ClaimTypes.NameIdentifier).Value;
                             string signedInUserID = Convert.ToBase64String(Encoding.UTF8.GetBytes(context.AuthenticationTicket.Identity.Name));
-                            AuthenticationContext authContext = new AuthenticationContext(Authority, new ADALTokenCache(signedInUserID));
+                            AuthenticationContext authContext = new AuthenticationContext(Authority);
                             var result = authContext.AcquireTokenByAuthorizationCodeAsync(
                                code, new Uri(HttpContext.Current.Request.Url.GetLeftPart(UriPartial.Path)), credential, ResourceId);
                             return result;
